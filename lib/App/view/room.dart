@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helix_chat_app/App/helpers/app_config.dart';
 import 'package:matrix/matrix.dart';
 
 class RoomPage extends StatefulWidget {
@@ -30,6 +31,8 @@ class _RoomPageState extends State<RoomPage> {
     }, onUpdate: () {
       print('On update');
     });
+
+    print('iddddddd${AppConfig.id}');
     super.initState();
   }
 
@@ -72,6 +75,9 @@ class _RoomPageState extends State<RoomPage> {
                         child: AnimatedList(
                           key: _listKey,
                           reverse: true,
+                          physics: const ScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
                           initialItemCount: timeline.events.length,
                           itemBuilder: (context, i, animation) => timeline
                               .events[i].relationshipEventId !=
@@ -79,11 +85,14 @@ class _RoomPageState extends State<RoomPage> {
                               ? Container()
                               : ScaleTransition(
                             scale: animation,
+                            alignment:timeline.events[i].senderId==AppConfig.id?
+                              Alignment.centerRight:Alignment.centerLeft ,
                             child: Opacity(
                               opacity: timeline.events[i].status.isSent
                                   ? 1
                                   : 0.5,
-                              child: ListTile(
+                              child:
+                              ListTile(
                                 leading: CircleAvatar(
                                   foregroundImage: timeline.events[i]
                                       .sender.avatarUrl ==
@@ -105,6 +114,7 @@ class _RoomPageState extends State<RoomPage> {
                                           .events[i].sender
                                           .calcDisplayname()),
                                     ),
+
                                     Text(
                                       timeline.events[i].originServerTs
                                           .toIso8601String(),
@@ -113,7 +123,8 @@ class _RoomPageState extends State<RoomPage> {
                                     ),
                                   ],
                                 ),
-                                subtitle: Text(timeline.events[i]
+                                subtitle: Text(
+                                    timeline.events[i]
                                     .getDisplayEvent(timeline)
                                     .body),
                               ),

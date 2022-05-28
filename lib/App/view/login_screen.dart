@@ -22,13 +22,21 @@ class _LoginScreenState extends State<LoginScreen> {
     LoginViewModel viewModel=Provider.of<LoginViewModel>(context);
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
+        centerTitle: true,
         title: const Text('Login',style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: viewModel.loading?
+        const Center(
+          child:  CircularProgressIndicator(
+          ),
+        ):
+        Column(
           children: [
+            const SizedBox(height: 16),
             TextField(
               controller: viewModel.usernameTextField,
               autocorrect: false,
@@ -49,26 +57,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 labelText: 'Password',
               ),
             ),
-            const SizedBox(height: 16),
+            const Expanded(child: SizedBox(height: 16)),
             SizedBox(
               width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(primary: Colors.white),
                 onPressed: (){
                   _login(viewModel);
                 },
-               child: const Text('Login',style: TextStyle(color: Colors.black)),
+               child: const Text('SIGN IN',style: TextStyle(color: Colors.black,
+               fontWeight: FontWeight.bold,fontSize: 18)),
               ),
             ),
+            const SizedBox(height:30)
           ],
         ),
       ),
     );
   }
+  snackbar(){
+
+  }
   void _login(LoginViewModel viewModel) async {
-//    setState(() {
-//      _loading = true;
-//    });
+  if(viewModel.usernameTextField.text.trim().isNotEmpty&&
+  viewModel.passwordTextField.text.trim().isNotEmpty){
+    viewModel.changeLoading(true);
     try {
       final client = Provider.of<Client>(context, listen: false);
       await client
@@ -82,16 +96,18 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => const RoomListPage()),
             (route) => false,
       );
+      viewModel.changeLoading(false);
     } catch (e) {
-//      ScaffoldMessenger.of(context).showSnackBar(
-//        SnackBar(
-//          content: Text(e.toString()),
-//        ),
-//      );
-//      setState(() {
-//        _loading = false;
-//      });
-    print(e.toString());
+      print(e.toString());
+      viewModel.changeLoading(false);
     }
+  }else{
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter UserName and Password'),
+      ),
+    );
+  }
+
   }
 }

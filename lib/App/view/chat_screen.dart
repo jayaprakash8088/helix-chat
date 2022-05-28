@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helix_chat_app/App/helpers/app_config.dart';
 import 'package:helix_chat_app/App/view/login_screen.dart';
 import 'package:helix_chat_app/App/view/room.dart';
 import 'package:matrix/matrix.dart';
@@ -37,7 +38,7 @@ class _RoomListPageState extends State<RoomListPage> {
     final client = Provider.of<Client>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chats'),
+        title: const Text('Helix Chats'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -49,7 +50,8 @@ class _RoomListPageState extends State<RoomListPage> {
         stream: client.onSync.stream,
         builder: (context, _) => ListView.builder(
           itemCount: client.rooms.length,
-          itemBuilder: (context, i) => ListTile(
+          itemBuilder: (context, i) =>
+              ListTile(
             leading: CircleAvatar(
               foregroundImage: client.rooms[i].avatar == null
                   ? null
@@ -63,7 +65,10 @@ class _RoomListPageState extends State<RoomListPage> {
             ),
             title: Row(
               children: [
-                Expanded(child: Text(client.rooms[i].displayname)),
+                Expanded(
+                    child: Text(
+                        client.rooms[i].displayname
+                    )),
                 if (client.rooms[i].notificationCount > 0)
                   Material(
                       borderRadius: BorderRadius.circular(99),
@@ -79,7 +84,9 @@ class _RoomListPageState extends State<RoomListPage> {
               client.rooms[i].lastEvent?.body ?? 'No messages',
               maxLines: 1,
             ),
-            onTap: () => _join(client.rooms[i]),
+            onTap: () {
+              AppConfig.id= client.rooms[i].directChatMatrixID!;
+              _join(client.rooms[i]);},
           ),
         ),
       ),

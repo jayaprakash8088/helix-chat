@@ -2,9 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/services/system_chrome.dart';
+import 'package:helix_chat_app/App/view/chat_screen.dart';
 import 'package:helix_chat_app/App/view/login_screen.dart';
+import 'package:matrix/matrix.dart';
 
 class SplashScreen extends StatefulWidget {
+  SplashScreen(this.client);
+  Client client;
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -26,16 +30,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Image.asset('images/splash_img.png',fit: BoxFit.cover),
+    );
   }
   void moveToNextPage() async {
-//    var isLoggedUser = await sharedPreferences.isLoggedUser();
-//    if (isLoggedUser != null && isLoggedUser) {
+    widget.client.isLogged() ?  Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => const RoomListPage())):
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => const LoginScreen()));
-//    } else {
-//      Navigator.pushReplacement(
-//          context, MaterialPageRoute(builder: (context) => OnBoardingScreen()));
     }
 
 }
